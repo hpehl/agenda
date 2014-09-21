@@ -24,6 +24,8 @@ package org.jboss.metrics.agenda;
 import org.jboss.dmr.ModelNode;
 
 /**
+ * An executable task holding a {@link org.jboss.dmr.ModelNode} operation.
+ *
  * @author Harald Pehl
  */
 public class Task {

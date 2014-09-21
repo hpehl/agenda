@@ -25,6 +25,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * A collection of {@link org.jboss.metrics.agenda.TaskDefinition}s with a unique id.
+ *
  * @author Harald Pehl
  */
 public class Agenda {
