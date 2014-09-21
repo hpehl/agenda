@@ -22,12 +22,8 @@
 package org.jboss.metrics.agenda;
 
 /**
- * An interface which knows how to create {@link org.jboss.metrics.agenda.Task}s out of
- * {@link org.jboss.metrics.agenda.TaskDefinition}s.
- *
+ * Groups related tasks.
  * @author Harald Pehl
  */
-public interface TaskBuilder {
-
-    Task createTask(TaskDefinition definition);
+public interface TaskGroup extends Iterable<Task> {
 }

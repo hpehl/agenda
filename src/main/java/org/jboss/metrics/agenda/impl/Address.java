@@ -21,27 +21,53 @@
  */
 package org.jboss.metrics.agenda.impl;
 
-import org.jboss.dmr.ModelNode;
-import org.jboss.metrics.agenda.Task;
-import org.jboss.metrics.agenda.TaskBuilder;
-import org.jboss.metrics.agenda.TaskDefinition;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import com.google.common.base.Joiner;
 
 /**
- * Creates a {@code read-attribute} operation of the given {@link org.jboss.metrics.agenda.TaskDefinition}.
  * @author Harald Pehl
  */
-public class ReadAttributeTaskBuilder implements TaskBuilder {
+public class Address implements Iterable<AddressTuple> {
+
+    private final List<AddressTuple> tuples;
+
+    public Address() {
+        this(Collections.<AddressTuple>emptyList());
+    }
+
+    public Address(final List<AddressTuple> tuples) {
+        this.tuples = new ArrayList<>();
+        this.tuples.addAll(tuples);
+    }
 
     @Override
-    public Task createTask(final TaskDefinition definition) {
-        ModelNode op = new ModelNode();
+    public boolean equals(final Object o) {
+        if (this == o) { return true; }
+        if (!(o instanceof Address)) { return false; }
 
-        Address address = AddressTokenizer.on(definition.getAddress()).address();
-        for (AddressTuple tuple : address) {
-            op.get("address").set(tuple.getType(), tuple.getName());
-        }
-        op.get("operation").set("read-attribute");
-        op.get("name").set(definition.getAttribute());
-        return new Task(op);
+        Address address = (Address) o;
+
+        if (!tuples.equals(address.tuples)) { return false; }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return tuples.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return Joiner.on('/').join(tuples);
+    }
+
+    @Override
+    public Iterator<AddressTuple> iterator() {
+        return tuples.iterator();
     }
 }

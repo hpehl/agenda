@@ -19,15 +19,37 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.metrics.agenda;
+package org.jboss.metrics.agenda.impl;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
 
 /**
- * An interface which knows how to create {@link org.jboss.metrics.agenda.Task}s out of
- * {@link org.jboss.metrics.agenda.TaskDefinition}s.
- *
  * @author Harald Pehl
  */
-public interface TaskBuilder {
+public class AddressTokenizer {
 
-    Task createTask(TaskDefinition definition);
+    public static AddressTokenizer on(String address) {
+        return new AddressTokenizer(Splitter.on(CharMatcher.anyOf("/=")).splitToList(address));
+    }
+
+    private final Address address;
+
+    private AddressTokenizer(final List<String> tokens) {
+        List<AddressTuple> tuples = new ArrayList<>(tokens.size() / 2 + 1);
+        for (Iterator<String> iterator = tokens.iterator(); iterator.hasNext(); ) {
+            String type = iterator.next();
+            String name = iterator.hasNext() ? iterator.next() : "";
+            tuples.add(new AddressTuple(type, name));
+        }
+        address = new Address(tuples);
+    }
+
+    public Address address() {
+        return address;
+    }
 }

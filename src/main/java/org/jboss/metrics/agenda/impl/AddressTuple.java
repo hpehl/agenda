@@ -19,15 +19,50 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.metrics.agenda;
+package org.jboss.metrics.agenda.impl;
 
 /**
- * An interface which knows how to create {@link org.jboss.metrics.agenda.Task}s out of
- * {@link org.jboss.metrics.agenda.TaskDefinition}s.
- *
- * @author Harald Pehl
- */
-public interface TaskBuilder {
+* @author Harald Pehl
+*/
+public class AddressTuple {
+    private final String type;
+    private final String name;
 
-    Task createTask(TaskDefinition definition);
+    public AddressTuple(final String type, final String name) {
+        this.type = type;
+        this.name = name;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) { return true; }
+        if (!(o instanceof AddressTuple)) { return false; }
+
+        AddressTuple that = (AddressTuple) o;
+
+        if (!name.equals(that.name)) { return false; }
+        if (!type.equals(that.type)) { return false; }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = type.hashCode();
+        result = 31 * result + name.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return type + "=" + name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
