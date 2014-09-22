@@ -19,50 +19,32 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.metrics.agenda.impl;
+package org.jboss.metrics.agenda;
 
 /**
-* @author Harald Pehl
-*/
-public class AddressTuple {
-    private final String key;
-    private final String value;
+ * An interface which takes an {@link org.jboss.metrics.agenda.Agenda}, turns it into
+ * executable {@link org.jboss.metrics.agenda.Task}s and executes them repeatedly.
+ * <p/>
+ * This interface has an implicit lifecycle:
+ * <ol>
+ * <li>Prepare: Takes an agenda, transforms it to executable tasks.</li>
+ * <li>Running: Executes the given tasks. How the tasks are executed and in which order highly depends on the
+ * concrete implementation.</li>
+ * <li>Shut down: Stops the execution of the tasks managed by this executor.</li>
+ * </ol>
+ *
+ * @author Harald Pehl
+ */
+public interface Executor {
 
-    public AddressTuple(final String key, final String value) {
-        this.key = key;
-        this.value = value;
-    }
+    void prepare(Agenda agenda);
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) { return true; }
-        if (!(o instanceof AddressTuple)) { return false; }
+    void run();
 
-        AddressTuple that = (AddressTuple) o;
+    void shutdown();
 
-        if (!value.equals(that.value)) { return false; }
-        if (!key.equals(that.key)) { return false; }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = key.hashCode();
-        result = 31 * result + value.hashCode();
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return key + "=" + value;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public String getValue() {
-        return value;
-    }
+    /**
+     * Returns the current statistics. This method should not block the executor and run very fast.
+     */
+    Statistics currentStats();
 }

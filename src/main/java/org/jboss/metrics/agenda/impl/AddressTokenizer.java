@@ -22,6 +22,7 @@
 package org.jboss.metrics.agenda.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,7 +35,12 @@ import com.google.common.base.Splitter;
 public class AddressTokenizer {
 
     public static AddressTokenizer on(String address) {
-        return new AddressTokenizer(Splitter.on(CharMatcher.anyOf("/=")).splitToList(address));
+        return new AddressTokenizer(address == null ?
+                Collections.<String>emptyList() :
+                Splitter.on(CharMatcher.anyOf("/="))
+                        .trimResults()
+                        .omitEmptyStrings()
+                        .splitToList(address));
     }
 
     private final Address address;
@@ -49,7 +55,7 @@ public class AddressTokenizer {
         address = new Address(tuples);
     }
 
-    public Address address() {
+    public Address get() {
         return address;
     }
 }

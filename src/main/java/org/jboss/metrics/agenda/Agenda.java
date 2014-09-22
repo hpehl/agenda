@@ -21,7 +21,8 @@
  */
 package org.jboss.metrics.agenda;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -29,21 +30,26 @@ import java.util.List;
  *
  * @author Harald Pehl
  */
-public class Agenda {
+public class Agenda implements Iterable<TaskDefinition> {
 
     private final String id;
-    private final List<TaskDefinition> taskDefinitions;
+    private final List<TaskDefinition> definitions;
 
-    public Agenda(final String id, final List<TaskDefinition> taskDefinitions) {
+    public Agenda(final String id, final List<TaskDefinition> definitions) {
         this.id = id;
-        this.taskDefinitions = taskDefinitions;
+        this.definitions = new ArrayList<>();
+
+        if (definitions != null) {
+            this.definitions.addAll(definitions);
+        }
     }
 
     public String getId() {
         return id;
     }
 
-    public List<TaskDefinition> getTaskDefinitions() {
-        return Collections.unmodifiableList(taskDefinitions);
+    @Override
+    public Iterator<TaskDefinition> iterator() {
+        return definitions.iterator();
     }
 }
