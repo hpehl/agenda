@@ -21,6 +21,10 @@
  */
 package org.jboss.metrics.agenda;
 
+import java.io.IOException;
+
+import org.jboss.as.controller.client.ModelControllerClient;
+
 /**
  * An interface which takes an {@link org.jboss.metrics.agenda.Agenda}, turns it into
  * executable {@link org.jboss.metrics.agenda.Task}s and executes them repeatedly.
@@ -35,13 +39,13 @@ package org.jboss.metrics.agenda;
  *
  * @author Harald Pehl
  */
-public interface Executor {
+public interface AgendaExecutor {
 
     void prepare(Agenda agenda);
 
-    void run();
+    void run(ModelControllerClient client);
 
-    void shutdown();
+    void shutdown() throws InterruptedException, IOException;
 
     /**
      * Returns the current statistics. This method should not block the executor and run very fast.

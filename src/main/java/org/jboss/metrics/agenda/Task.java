@@ -22,6 +22,7 @@
 package org.jboss.metrics.agenda;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,7 +43,7 @@ public class Task {
         this.operation = operation;
     }
 
-    public Task(final Task... tasks) {
+    public Task(final Collection<Task> tasks) {
         this.id = UUID.randomUUID().toString();
         if (tasks != null) {
             ModelNode comp = new ModelNode();
@@ -78,7 +79,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task(" + id + ": " + operation + ")";
+        return "Task(" + id + ")";
     }
 
     public String getId() {
