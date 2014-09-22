@@ -19,13 +19,28 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.metrics.agenda.impl;
+package org.jboss.metrics.agenda;
+
+import java.net.InetAddress;
+import java.util.concurrent.TimeUnit;
+
+import org.jboss.as.controller.client.ModelControllerClient;
+import org.jboss.metrics.agenda.impl.IntervalBasedAgendaExecutor;
+import org.jboss.metrics.agenda.sample.Agendas;
 
 /**
- * Creates one composite operation from the specified tasks.
  * @author Harald Pehl
  */
-public class CompositeTaskGroup {
+public class App {
 
+    public static void main(String[] args) throws Exception {
+        Agenda agenda = Agendas.dataSourcePool();
+        ModelControllerClient client = ModelControllerClient.Factory.create(InetAddress.getByName("localhost"), 9999);
+        AgendaExecutor executor = new IntervalBasedAgendaExecutor();
 
+        executor.prepare(agenda);
+        executor.run(client);
+        TimeUnit.SECONDS.sleep(10);
+        executor.shutdown();
+    }
 }

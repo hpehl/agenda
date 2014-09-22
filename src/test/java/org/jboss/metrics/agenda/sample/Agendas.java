@@ -42,7 +42,7 @@ public final class Agendas {
 
         // 5
         definitions.add(new TaskDefinition(address, "CreatedCount", 5, SECOND));
-        definitions.add(new TaskDefinition(address, "DestroyedOut", 5, SECOND));
+        definitions.add(new TaskDefinition(address, "DestroyedCount", 5, SECOND));
 
         // 4
         definitions.add(new TaskDefinition(address, "TimedOut", 4, SECOND));

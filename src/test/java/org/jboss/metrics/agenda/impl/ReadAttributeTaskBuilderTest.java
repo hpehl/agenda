@@ -32,9 +32,9 @@ public class ReadAttributeTaskBuilderTest {
         assertNotNull(operation);
 
         ModelNode expected = new ModelNode();
-        expected.get("address").set("subsystem", "datasources");
-        expected.get("address").set("data-source", "ExampleDS");
-        expected.get("address").set("statistics", "pool");
+        expected.get("address").add("subsystem", "datasources");
+        expected.get("address").add("data-source", "ExampleDS");
+        expected.get("address").add("statistics", "pool");
         expected.get("operation").set("read-attribute");
         expected.get("name").set("ActiveCount");
         assertEquals(expected, operation);

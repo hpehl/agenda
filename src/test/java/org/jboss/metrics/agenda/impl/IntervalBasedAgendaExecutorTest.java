@@ -6,18 +6,18 @@ import org.jboss.metrics.agenda.sample.Agendas;
 import org.junit.Before;
 import org.junit.Test;
 
-public class IntervalBasedExecutorTest {
+public class IntervalBasedAgendaExecutorTest {
 
-    private IntervalBasedExecutor executor;
+    private IntervalBasedAgendaExecutor executor;
 
     @Before
     public void setUp() {
-        executor = new IntervalBasedExecutor();
+        executor = new IntervalBasedAgendaExecutor();
     }
 
     @Test
     public void prepare() {
         executor.prepare(Agendas.dataSourcePool());
-        assertEquals(5, executor.schedule.size());
+        assertEquals(5, executor.getSchedule().size());
     }
 }
