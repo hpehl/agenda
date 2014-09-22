@@ -41,10 +41,6 @@ public class TaskDefinition {
 
     public TaskDefinition(final String address, final String attribute, final int interval,
             final TimeUnit unit) {
-        assert address != null : "Address must not be null";
-        assert attribute != null : "Address must not be null";
-        assert interval > 0 : "Interval must be > 0";
-
         this.address = address;
         this.attribute = attribute;
         this.interval = interval;
@@ -90,6 +86,25 @@ public class TaskDefinition {
 
     public int getInterval() {
         return interval;
+    }
+
+    public long getIntervalInMillis() {
+        final long ms;
+        switch (unit) {
+            case SECOND:
+                ms = interval * 1000;
+                break;
+            case MINUTE:
+                ms = interval * 60 * 1000;
+                break;
+            case HOUR:
+                ms = interval * 60 * 60 * 1000;
+                break;
+            default:
+                ms = 0;
+                break;
+        }
+        return ms;
     }
 
     public TimeUnit getUnit() {

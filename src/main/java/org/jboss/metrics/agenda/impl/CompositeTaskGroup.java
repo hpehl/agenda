@@ -22,47 +22,10 @@
 package org.jboss.metrics.agenda.impl;
 
 /**
-* @author Harald Pehl
-*/
-public class AddressTuple {
-    private final String key;
-    private final String value;
+ * Creates one composite operation from the specified tasks.
+ * @author Harald Pehl
+ */
+public class CompositeTaskGroup {
 
-    public AddressTuple(final String key, final String value) {
-        this.key = key;
-        this.value = value;
-    }
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) { return true; }
-        if (!(o instanceof AddressTuple)) { return false; }
-
-        AddressTuple that = (AddressTuple) o;
-
-        if (!value.equals(that.value)) { return false; }
-        if (!key.equals(that.key)) { return false; }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = key.hashCode();
-        result = 31 * result + value.hashCode();
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return key + "=" + value;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public String getValue() {
-        return value;
-    }
 }

@@ -36,9 +36,9 @@ public class ReadAttributeTaskBuilder implements TaskBuilder {
     public Task createTask(final TaskDefinition definition) {
         ModelNode op = new ModelNode();
 
-        Address address = AddressTokenizer.on(definition.getAddress()).address();
+        Address address = AddressTokenizer.on(definition.getAddress()).get();
         for (AddressTuple tuple : address) {
-            op.get("address").set(tuple.getType(), tuple.getName());
+            op.get("address").set(tuple.getKey(), tuple.getValue());
         }
         op.get("operation").set("read-attribute");
         op.get("name").set(definition.getAttribute());

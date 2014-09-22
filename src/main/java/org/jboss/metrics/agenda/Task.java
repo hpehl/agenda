@@ -21,6 +21,10 @@
  */
 package org.jboss.metrics.agenda;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import org.jboss.dmr.ModelNode;
 
 /**
@@ -30,9 +34,30 @@ import org.jboss.dmr.ModelNode;
  */
 public class Task {
 
+    private final String id;
     private final ModelNode operation;
 
-    public Task(final ModelNode operation) {this.operation = operation;}
+    public Task(final ModelNode operation) {
+        this.id = UUID.randomUUID().toString();
+        this.operation = operation;
+    }
+
+    public Task(final Task... tasks) {
+        this.id = UUID.randomUUID().toString();
+        if (tasks != null) {
+            ModelNode comp = new ModelNode();
+            List<ModelNode> steps = new ArrayList<>();
+            comp.get("address").setEmptyList();
+            comp.get("operation").set("composite");
+            for (Task task : tasks) {
+                steps.add(task.getOperation());
+            }
+            comp.get("steps").set(steps);
+            this.operation = comp;
+        } else {
+            this.operation = new ModelNode();
+        }
+    }
 
     @Override
     public boolean equals(final Object o) {
@@ -41,19 +66,23 @@ public class Task {
 
         Task task = (Task) o;
 
-        if (!operation.equals(task.operation)) { return false; }
+        if (!id.equals(task.id)) { return false; }
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return operation.hashCode();
+        return id.hashCode();
     }
 
     @Override
     public String toString() {
-        return "Task(" + operation + ")";
+        return "Task(" + id + ": " + operation + ")";
+    }
+
+    public String getId() {
+        return id;
     }
 
     public ModelNode getOperation() {

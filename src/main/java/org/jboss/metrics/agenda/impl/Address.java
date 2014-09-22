@@ -41,7 +41,9 @@ public class Address implements Iterable<AddressTuple> {
 
     public Address(final List<AddressTuple> tuples) {
         this.tuples = new ArrayList<>();
-        this.tuples.addAll(tuples);
+        if (tuples != null) {
+            this.tuples.addAll(tuples);
+        }
     }
 
     @Override
@@ -69,5 +71,16 @@ public class Address implements Iterable<AddressTuple> {
     @Override
     public Iterator<AddressTuple> iterator() {
         return tuples.iterator();
+    }
+
+    public boolean isEmpty() {return tuples.isEmpty();}
+
+    public boolean isBalanced() {
+        for (AddressTuple tuple : this) {
+            if (tuple.getValue() == null || tuple.getValue().length() == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 }
