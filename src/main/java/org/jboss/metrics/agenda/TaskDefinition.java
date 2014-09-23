@@ -21,14 +21,15 @@
  */
 package org.jboss.metrics.agenda;
 
-import static org.jboss.metrics.agenda.TaskDefinition.TimeUnit.SECOND;
+import static java.util.concurrent.TimeUnit.*;
+
+import java.util.EnumSet;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Harald Pehl
  */
 public class TaskDefinition {
-
-    public enum TimeUnit {SECOND, MINUTE, HOUR}
 
     private final String address;
     private final String attribute;
@@ -36,11 +37,15 @@ public class TaskDefinition {
     private final TimeUnit unit;
 
     public TaskDefinition(final String address, final String attribute, final int interval) {
-        this(address, attribute, interval, SECOND);
+        this(address, attribute, interval, SECONDS);
     }
 
     public TaskDefinition(final String address, final String attribute, final int interval,
             final TimeUnit unit) {
+        if (unit == NANOSECONDS || unit == MICROSECONDS || unit == MILLISECONDS) {
+            throw new IllegalArgumentException("Unit must be one of " + EnumSet.of(SECONDS, MINUTES, HOURS, DAYS));
+        }
+
         this.address = address;
         this.attribute = attribute;
         this.interval = interval;
@@ -73,7 +78,7 @@ public class TaskDefinition {
 
     @Override
     public String toString() {
-        return "TaskDefinition(" + address + ":" + attribute + " every " + interval + " " + unit.name().toLowerCase() + "(s)";
+        return "TaskDefinition(" + address + ":" + attribute + " every " + interval + " " + unit.name().toLowerCase() + ")";
     }
 
     public String getAddress() {
@@ -89,22 +94,7 @@ public class TaskDefinition {
     }
 
     public long getIntervalInMillis() {
-        final long ms;
-        switch (unit) {
-            case SECOND:
-                ms = interval * 1000;
-                break;
-            case MINUTE:
-                ms = interval * 60 * 1000;
-                break;
-            case HOUR:
-                ms = interval * 60 * 60 * 1000;
-                break;
-            default:
-                ms = 0;
-                break;
-        }
-        return ms;
+        return MILLISECONDS.convert(interval, unit);
     }
 
     public TimeUnit getUnit() {
