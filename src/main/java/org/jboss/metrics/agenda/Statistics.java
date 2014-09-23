@@ -26,5 +26,5 @@ package org.jboss.metrics.agenda;
  */
 public interface Statistics {
 
-    // TODO Define getter
+    // TODO Define some useful methods
 }

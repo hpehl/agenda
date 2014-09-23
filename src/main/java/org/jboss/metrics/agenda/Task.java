@@ -29,7 +29,7 @@ import java.util.UUID;
 import org.jboss.dmr.ModelNode;
 
 /**
- * An executable task holding a {@link org.jboss.dmr.ModelNode} operation.
+ * An executable task holding an unique id and a {@link org.jboss.dmr.ModelNode} operation.
  *
  * @author Harald Pehl
  */

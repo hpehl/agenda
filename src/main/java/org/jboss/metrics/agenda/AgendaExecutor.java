@@ -48,7 +48,7 @@ public interface AgendaExecutor {
     void shutdown() throws InterruptedException, IOException;
 
     /**
-     * Returns the current statistics. This method should not block the executor and run very fast.
+     * Returns the current statistics. This method should not block the executor and return almost instantly.
      */
     Statistics currentStats();
 }
