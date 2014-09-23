@@ -1,6 +1,6 @@
 package org.jboss.metrics.agenda.impl;
 
-import static org.jboss.metrics.agenda.TaskDefinition.TimeUnit.SECOND;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -23,7 +23,7 @@ public class ReadAttributeTaskBuilderTest {
     @Test
     public void createTask() {
         TaskDefinition td = new TaskDefinition("/subsystem=datasources/data-source=ExampleDS/statistics=pool",
-                "ActiveCount", 5, SECOND);
+                "ActiveCount", 5, SECONDS);
 
         Task task = taskBuilder.createTask(td);
         assertNotNull(task);
