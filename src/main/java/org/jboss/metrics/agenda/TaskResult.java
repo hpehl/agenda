@@ -28,7 +28,8 @@ import org.jboss.dmr.ModelNode;
  */
 public class TaskResult {
 
-    public enum Status { SUCCESS, FAILED, EXCEPTION}
+    public enum Status {SUCCESS, FAILED, EXCEPTION}
+
 
     private final String taskId;
     private final ModelNode result;

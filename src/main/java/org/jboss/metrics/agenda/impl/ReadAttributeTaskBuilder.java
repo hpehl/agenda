@@ -25,6 +25,9 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.metrics.agenda.Task;
 import org.jboss.metrics.agenda.TaskBuilder;
 import org.jboss.metrics.agenda.TaskDefinition;
+import org.jboss.metrics.agenda.address.Address;
+import org.jboss.metrics.agenda.address.AddressTokenizer;
+import org.jboss.metrics.agenda.address.AddressTuple;
 
 /**
  * Creates a {@code read-attribute} operation of the given {@link org.jboss.metrics.agenda.TaskDefinition}.

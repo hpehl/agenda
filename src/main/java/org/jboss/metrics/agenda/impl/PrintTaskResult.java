@@ -21,41 +21,16 @@
  */
 package org.jboss.metrics.agenda.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Splitter;
+import org.jboss.metrics.agenda.TaskResultConsumer;
+import org.jboss.metrics.agenda.TaskResult;
 
 /**
  * @author Harald Pehl
  */
-public class AddressTokenizer {
+public class PrintTaskResult implements TaskResultConsumer {
 
-    public static AddressTokenizer on(String address) {
-        return new AddressTokenizer(address == null ?
-                Collections.<String>emptyList() :
-                Splitter.on(CharMatcher.anyOf("/="))
-                        .trimResults()
-                        .omitEmptyStrings()
-                        .splitToList(address));
-    }
-
-    private final Address address;
-
-    private AddressTokenizer(final List<String> tokens) {
-        List<AddressTuple> tuples = new ArrayList<>(tokens.size() / 2 + 1);
-        for (Iterator<String> iterator = tokens.iterator(); iterator.hasNext(); ) {
-            String type = iterator.next();
-            String name = iterator.hasNext() ? iterator.next() : "";
-            tuples.add(new AddressTuple(type, name));
-        }
-        address = new Address(tuples);
-    }
-
-    public Address get() {
-        return address;
+    @Override
+    public void consume(final TaskResult taskResult) {
+        System.out.println("Task result: " + taskResult);
     }
 }

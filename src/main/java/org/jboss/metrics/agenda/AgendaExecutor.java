@@ -41,6 +41,8 @@ import org.jboss.as.controller.client.ModelControllerClient;
  */
 public interface AgendaExecutor {
 
+    public enum State {PREPARED, RUNNING, SHUT_DOWN}
+
     void prepare(Agenda agenda);
 
     void run(ModelControllerClient client);
@@ -48,7 +50,7 @@ public interface AgendaExecutor {
     void shutdown() throws InterruptedException, IOException;
 
     /**
-     * Returns the current statistics. This method should not block the executor and return almost instantly.
+     * Returns the current statistics. This method must not block the executor and return almost instantly.
      */
     Statistics currentStats();
 }

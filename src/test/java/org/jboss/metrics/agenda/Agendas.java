@@ -19,15 +19,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.metrics.agenda.sample;
+package org.jboss.metrics.agenda;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.jboss.metrics.agenda.Agenda;
-import org.jboss.metrics.agenda.TaskDefinition;
 
 /**
  * @author Harald Pehl

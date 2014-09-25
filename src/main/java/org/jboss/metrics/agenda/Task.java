@@ -45,7 +45,7 @@ public class Task {
 
     public Task(final Collection<Task> tasks) {
         this.id = UUID.randomUUID().toString();
-        if (tasks != null) {
+        if (tasks != null && !tasks.isEmpty()) {
             ModelNode comp = new ModelNode();
             List<ModelNode> steps = new ArrayList<>();
             comp.get("address").setEmptyList();
