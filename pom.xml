@@ -10,7 +10,7 @@
 
     <groupId>org.jboss.metrics</groupId>
     <artifactId>agenda</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <packaging>jar</packaging>
 
     <name>agenda</name>
