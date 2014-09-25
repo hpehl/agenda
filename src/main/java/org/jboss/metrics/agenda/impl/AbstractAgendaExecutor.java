@@ -19,11 +19,26 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.metrics.agenda;
+package org.jboss.metrics.agenda.impl;
+
+import static org.jboss.metrics.agenda.AgendaExecutor.State.SHUT_DOWN;
+
+import org.jboss.metrics.agenda.AgendaExecutor;
 
 /**
- * Groups related tasks.
  * @author Harald Pehl
  */
-public interface TaskGroup extends Iterable<Task> {
+public abstract class AbstractAgendaExecutor implements AgendaExecutor {
+
+    private State state = SHUT_DOWN;
+
+    protected void pushState(State state) {
+        this.state = state;
+    }
+
+    protected void verifyState(State state) throws IllegalStateException {
+        if (this.state != state) {
+            throw new IllegalStateException("Expected state " + state + ", but got " + this.state);
+        }
+    }
 }

@@ -26,12 +26,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.metrics.agenda.impl.IntervalBasedAgendaExecutor;
-import org.jboss.metrics.agenda.sample.Agendas;
 
 /**
  * @author Harald Pehl
  */
-public class App {
+public class DemoApp {
 
     public static void main(String[] args) throws Exception {
         Agenda agenda = Agendas.dataSourcePool();

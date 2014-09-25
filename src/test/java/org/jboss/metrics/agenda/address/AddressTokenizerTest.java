@@ -1,9 +1,11 @@
-package org.jboss.metrics.agenda.impl;
+package org.jboss.metrics.agenda.address;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.jboss.metrics.agenda.address.Address;
+import org.jboss.metrics.agenda.address.AddressTokenizer;
 import org.junit.Test;
 
 public class AddressTokenizerTest {
