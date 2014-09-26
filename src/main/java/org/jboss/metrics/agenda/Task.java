@@ -21,43 +21,19 @@
  */
 package org.jboss.metrics.agenda;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-
-import org.jboss.dmr.ModelNode;
-
 /**
- * An executable task holding an unique id and a {@link org.jboss.dmr.ModelNode} operation.
- *
  * @author Harald Pehl
  */
 public class Task {
 
-    private final String id;
-    private final ModelNode operation;
+    private final String address;
+    private final String attribute;
+    private final Interval interval;
 
-    public Task(final ModelNode operation) {
-        this.id = UUID.randomUUID().toString();
-        this.operation = operation;
-    }
-
-    public Task(final Collection<Task> tasks) {
-        this.id = UUID.randomUUID().toString();
-        if (tasks != null && !tasks.isEmpty()) {
-            ModelNode comp = new ModelNode();
-            List<ModelNode> steps = new ArrayList<>();
-            comp.get("address").setEmptyList();
-            comp.get("operation").set("composite");
-            for (Task task : tasks) {
-                steps.add(task.getOperation());
-            }
-            comp.get("steps").set(steps);
-            this.operation = comp;
-        } else {
-            this.operation = new ModelNode();
-        }
+    public Task(final String address, final String attribute, final Interval interval) {
+        this.address = address;
+        this.attribute = attribute;
+        this.interval = interval;
     }
 
     @Override
@@ -67,26 +43,35 @@ public class Task {
 
         Task task = (Task) o;
 
-        if (!id.equals(task.id)) { return false; }
+        if (!address.equals(task.address)) { return false; }
+        if (!attribute.equals(task.attribute)) { return false; }
+        if (interval != task.interval) { return false; }
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        int result = address.hashCode();
+        result = 31 * result + attribute.hashCode();
+        result = 31 * result + interval.hashCode();
+        return result;
     }
 
     @Override
     public String toString() {
-        return "Task(" + id + ")";
+        return "TaskDefinition(" + address + ":" + attribute + " every " + interval + ")";
     }
 
-    public String getId() {
-        return id;
+    public String getAddress() {
+        return address;
     }
 
-    public ModelNode getOperation() {
-        return operation;
+    public String getAttribute() {
+        return attribute;
+    }
+
+    public Interval getInterval() {
+        return interval;
     }
 }

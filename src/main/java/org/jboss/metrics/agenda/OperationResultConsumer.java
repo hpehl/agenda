@@ -21,29 +21,10 @@
  */
 package org.jboss.metrics.agenda;
 
-import java.net.InetAddress;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import org.jboss.as.controller.client.ModelControllerClient;
-import org.jboss.metrics.agenda.impl.IntervalBasedScheduler;
-import org.jboss.metrics.agenda.impl.IntervalGrouping;
-
 /**
  * @author Harald Pehl
  */
-public class DemoApp {
+public interface OperationResultConsumer {
 
-    public static void main(String[] args) throws Exception {
-        Agenda agenda = Agendas.dataSourcePool();
-        IntervalGrouping intervalGrouping = new IntervalGrouping();
-        Set<TaskGroup> groups = intervalGrouping.apply(agenda.getTasks());
-
-        ModelControllerClient client = ModelControllerClient.Factory.create(InetAddress.getByName("localhost"), 9999);
-        Scheduler executor = new IntervalBasedScheduler(client);
-
-        executor.start(groups);
-        TimeUnit.SECONDS.sleep(10);
-        executor.stop();
-    }
+    void consume(OperationResult operationResult);
 }

@@ -21,10 +21,52 @@
  */
 package org.jboss.metrics.agenda;
 
+import java.util.UUID;
+
+import org.jboss.dmr.ModelNode;
+
 /**
+ * An executable task holding an unique id and a {@link org.jboss.dmr.ModelNode} operation.
+ *
  * @author Harald Pehl
  */
-public interface TaskResultConsumer {
+public class Operation {
 
-    void consume(TaskResult taskResult);
+    private final String id;
+    private final ModelNode operation;
+
+    public Operation(final ModelNode operation) {
+        this.id = UUID.randomUUID().toString();
+        this.operation = operation;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) { return true; }
+        if (!(o instanceof Operation)) { return false; }
+
+        Operation operation = (Operation) o;
+
+        if (!id.equals(operation.id)) { return false; }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Task(" + id + ")";
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public ModelNode getOperation() {
+        return operation;
+    }
 }

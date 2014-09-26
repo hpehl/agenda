@@ -26,7 +26,7 @@ import org.jboss.dmr.ModelNode;
 /**
  * @author Harald Pehl
  */
-public class TaskResult {
+public class OperationResult {
 
     public enum Status {SUCCESS, FAILED, EXCEPTION}
 
@@ -34,11 +34,9 @@ public class TaskResult {
     private final String taskId;
     private final ModelNode result;
     private final Status status;
-    private final long duration;
 
-    public TaskResult(final String taskId, final ModelNode result, final Status status, final long duration) {
+    public OperationResult(final String taskId, final ModelNode result, final Status status) {
         this.taskId = taskId;
-        this.duration = duration;
         this.result = result;
         this.status = status;
     }
@@ -46,9 +44,9 @@ public class TaskResult {
     @Override
     public boolean equals(final Object o) {
         if (this == o) { return true; }
-        if (!(o instanceof TaskResult)) { return false; }
+        if (!(o instanceof OperationResult)) { return false; }
 
-        TaskResult that = (TaskResult) o;
+        OperationResult that = (OperationResult) o;
 
         if (!result.equals(that.result)) { return false; }
         if (status != that.status) { return false; }
@@ -67,7 +65,7 @@ public class TaskResult {
 
     @Override
     public String toString() {
-        return "TaskResult(" + taskId + ", " + status + ", " + duration + "ms)";
+        return "TaskResult(" + taskId + ", " + status+")";
     }
 
     public String getTaskId() {
@@ -89,7 +87,4 @@ public class TaskResult {
         return status;
     }
 
-    public long getDuration() {
-        return duration;
-    }
 }

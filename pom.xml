@@ -21,9 +21,15 @@
         <version.guava>18.0</version.guava>
         <version.junit>4.11</version.junit>
         <version.wildfly.core>1.0.0.Alpha8</version.wildfly.core>
+        <metrics.version>3.1.0</metrics.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+            <version>${metrics.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.wildfly.core</groupId>
             <artifactId>wildfly-controller-client</artifactId>

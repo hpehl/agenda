@@ -22,25 +22,25 @@
 package org.jboss.metrics.agenda;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * A collection of {@link org.jboss.metrics.agenda.TaskDefinition}s with a unique id.
+ * A collection of {@link Task}s with a unique id.
  *
  * @author Harald Pehl
  */
-public class Agenda implements Iterable<TaskDefinition> {
+public class Agenda {
 
     private final String id;
-    private final List<TaskDefinition> definitions;
+    private final List<Task> tasks;
 
-    public Agenda(final String id, final List<TaskDefinition> definitions) {
+    public Agenda(final String id, final List<Task> tasks) {
         this.id = id;
-        this.definitions = new ArrayList<>();
+        this.tasks = new ArrayList<>();
 
-        if (definitions != null) {
-            this.definitions.addAll(definitions);
+        if (tasks != null) {
+            this.tasks.addAll(tasks);
         }
     }
 
@@ -48,8 +48,7 @@ public class Agenda implements Iterable<TaskDefinition> {
         return id;
     }
 
-    @Override
-    public Iterator<TaskDefinition> iterator() {
-        return definitions.iterator();
+    public List<Task> getTasks() {
+        return Collections.unmodifiableList(tasks);
     }
 }

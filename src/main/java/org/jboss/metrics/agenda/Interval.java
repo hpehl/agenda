@@ -19,18 +19,35 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.metrics.agenda.impl;
+package org.jboss.metrics.agenda;
 
-import org.jboss.metrics.agenda.TaskResultConsumer;
-import org.jboss.metrics.agenda.TaskResult;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Harald Pehl
  */
-public class PrintTaskResult implements TaskResultConsumer {
+public enum Interval {
 
-    @Override
-    public void consume(final TaskResult taskResult) {
-        System.out.println("Task result: " + taskResult);
+    EACH_SECOND(1, TimeUnit.SECONDS),
+    TWO_SECONDS(2, TimeUnit.SECONDS),
+    FIVE_SECONDS(5, TimeUnit.SECONDS),
+
+    EACH_MINUTES(1, TimeUnit.MINUTES),
+    TWO_MINUTES(2, TimeUnit.MINUTES),
+    FIVE_MINUTES(5, TimeUnit.MINUTES),
+    TWENTY_MINUTES(20, TimeUnit.MINUTES),
+
+    EACH_HOUR(1, TimeUnit.HOURS);
+
+    private final int val;
+    private final TimeUnit unit;
+
+    Interval(int val, TimeUnit unit) {
+        this.val = val;
+        this.unit = unit;
+    }
+
+    public long millis() {
+        return TimeUnit.MILLISECONDS.convert(val, unit);
     }
 }

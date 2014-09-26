@@ -21,8 +21,6 @@
  */
 package org.jboss.metrics.agenda;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,26 +32,19 @@ public final class Agendas {
     private Agendas() {}
 
     public static Agenda dataSourcePool() {
-        List<TaskDefinition> definitions = new ArrayList<>();
+        List<Task> definitions = new ArrayList<>();
         String address = "/subsystem=datasources/data-source=ExampleDS/statistics=pool";
 
-        // 5
-        definitions.add(new TaskDefinition(address, "CreatedCount", 5, SECONDS));
-        definitions.add(new TaskDefinition(address, "DestroyedCount", 5, SECONDS));
+        definitions.add(new Task(address, "CreatedCount", Interval.EACH_SECOND));
+        definitions.add(new Task(address, "DestroyedCount", Interval.EACH_SECOND));
 
-        // 4
-        definitions.add(new TaskDefinition(address, "TimedOut", 4, SECONDS));
+        definitions.add(new Task(address, "TimedOut", Interval.TWO_SECONDS));
+        definitions.add(new Task(address, "InUseCount", Interval.TWO_SECONDS));
+        definitions.add(new Task(address, "AverageBlockingTime", Interval.TWO_SECONDS));
 
-        // 3
-        definitions.add(new TaskDefinition(address, "InUseCount", 3, SECONDS));
-
-        // 2
-        definitions.add(new TaskDefinition(address, "AverageBlockingTime", 2, SECONDS));
-        definitions.add(new TaskDefinition(address, "AverageCreationTime", 2, SECONDS));
-
-        // 1
-        definitions.add(new TaskDefinition(address, "AvailableCount", 1, SECONDS));
-        definitions.add(new TaskDefinition(address, "ActiveCount", 1, SECONDS));
+        definitions.add(new Task(address, "AverageCreationTime", Interval.FIVE_SECONDS));
+        definitions.add(new Task(address, "AvailableCount", Interval.FIVE_SECONDS));
+        definitions.add(new Task(address, "ActiveCount", Interval.FIVE_SECONDS));
 
         return new Agenda("dataSourcePool", definitions);
     }

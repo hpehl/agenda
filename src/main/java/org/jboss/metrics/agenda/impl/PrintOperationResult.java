@@ -19,38 +19,18 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.metrics.agenda;
+package org.jboss.metrics.agenda.impl;
 
-import java.io.IOException;
-
-import org.jboss.as.controller.client.ModelControllerClient;
+import org.jboss.metrics.agenda.OperationResult;
+import org.jboss.metrics.agenda.OperationResultConsumer;
 
 /**
- * An interface which takes an {@link org.jboss.metrics.agenda.Agenda}, turns it into
- * executable {@link org.jboss.metrics.agenda.Task}s and executes them repeatedly.
- * <p/>
- * This interface has an implicit lifecycle:
- * <ol>
- * <li>Prepare: Takes an agenda, transforms it to executable tasks.</li>
- * <li>Running: Executes the given tasks. How the tasks are executed and in which order highly depends on the
- * concrete implementation.</li>
- * <li>Shut down: Stops the execution of the tasks managed by this executor.</li>
- * </ol>
- *
  * @author Harald Pehl
  */
-public interface AgendaExecutor {
+public class PrintOperationResult implements OperationResultConsumer {
 
-    public enum State {PREPARED, RUNNING, SHUT_DOWN}
-
-    void prepare(Agenda agenda);
-
-    void run(ModelControllerClient client);
-
-    void shutdown() throws InterruptedException, IOException;
-
-    /**
-     * Returns the current statistics. This method must not block the executor and return almost instantly.
-     */
-    Statistics currentStats();
+    @Override
+    public void consume(final OperationResult operationResult) {
+        System.out.println("Task result: " + operationResult);
+    }
 }

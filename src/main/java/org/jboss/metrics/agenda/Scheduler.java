@@ -19,32 +19,34 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.metrics.agenda.impl;
+package org.jboss.metrics.agenda;
 
-import org.jboss.dmr.ModelNode;
-import org.jboss.metrics.agenda.Task;
-import org.jboss.metrics.agenda.TaskBuilder;
-import org.jboss.metrics.agenda.TaskDefinition;
-import org.jboss.metrics.agenda.address.Address;
-import org.jboss.metrics.agenda.address.AddressTokenizer;
-import org.jboss.metrics.agenda.address.AddressTuple;
+import java.util.Set;
 
 /**
- * Creates a {@code read-attribute} operation of the given {@link org.jboss.metrics.agenda.TaskDefinition}.
+ * An interface which takes an {@link org.jboss.metrics.agenda.Agenda}, turns it into
+ * executable {@link Operation}s and executes them repeatedly.
+ * <p/>
+ * This interface has an implicit lifecycle:
+ * <ol>
+ * <li>Prepare: Takes an agenda, transforms it to executable tasks.</li>
+ * <li>Running: Executes the given tasks. How the tasks are executed and in which order highly depends on the
+ * concrete implementation.</li>
+ * <li>Shut down: Stops the execution of the tasks managed by this executor.</li>
+ * </ol>
+ *
  * @author Harald Pehl
  */
-public class ReadAttributeTaskBuilder implements TaskBuilder {
+public interface Scheduler {
 
-    @Override
-    public Task createTask(final TaskDefinition definition) {
-        ModelNode op = new ModelNode();
+    public enum State {RUNNING, STOPPED}
 
-        Address address = AddressTokenizer.on(definition.getAddress()).get();
-        for (AddressTuple tuple : address) {
-            op.get("address").add(tuple.getKey(), tuple.getValue());
-        }
-        op.get("operation").set("read-attribute");
-        op.get("name").set(definition.getAttribute());
-        return new Task(op);
-    }
+    void start(Set<TaskGroup> groups);
+
+    void stop();
+
+    /**
+     * Returns the current statistics. This method must not block the executor and return almost instantly.
+     */
+    Statistics currentStats();
 }
