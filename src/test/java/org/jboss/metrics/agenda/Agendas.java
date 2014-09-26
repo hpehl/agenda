@@ -48,4 +48,21 @@ public final class Agendas {
 
         return new Agenda("dataSourcePool", definitions);
     }
+
+    public static Agenda stressTest() {
+        List<Task> definitions = new ArrayList<>();
+        String address = "/subsystem=datasources/data-source=ExampleDS/statistics=pool";
+
+        for (int i = 0; i < 1000; i++) {
+            definitions.add(new Task(address, "CreatedCount", Interval.EACH_SECOND));
+            definitions.add(new Task(address, "DestroyedCount", Interval.EACH_SECOND));
+        }
+
+        for (int i = 0; i < 500; i++) {
+            definitions.add(new Task(address, "TimedOut", Interval.TWO_SECONDS));
+            definitions.add(new Task(address, "InUseCount", Interval.TWO_SECONDS));
+            definitions.add(new Task(address, "AverageBlockingTime", Interval.TWO_SECONDS));
+        }
+        return new Agenda("stressTest", definitions);
+    }
 }

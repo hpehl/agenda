@@ -50,13 +50,13 @@ public class Task {
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        int result = address.hashCode();
-        result = 31 * result + attribute.hashCode();
-        result = 31 * result + interval.hashCode();
-        return result;
-    }
+//    @Override
+//    public int hashCode() {
+//        int result = address.hashCode();
+//        result = 31 * result + attribute.hashCode();
+//        result = 31 * result + interval.hashCode();
+//        return result;
+//    }
 
     @Override
     public String toString() {

@@ -21,6 +21,8 @@
  */
 package org.jboss.metrics.agenda;
 
+import java.util.Set;
+
 /**
  * An interface to create {@link org.jboss.metrics.agenda.Operation}s out of
  * {@link org.jboss.metrics.agenda.TaskGroup}s.
@@ -29,5 +31,5 @@ package org.jboss.metrics.agenda;
  */
 public interface OperationBuilder {
 
-    Operation createOperation(TaskGroup group);
+    Set<Operation> createOperation(TaskGroup group);
 }

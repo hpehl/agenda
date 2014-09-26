@@ -34,6 +34,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.codahale.metrics.ConsoleReporter;
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import org.jboss.as.controller.client.ModelControllerClient;
@@ -52,31 +53,38 @@ public class IntervalBasedScheduler extends AbstractScheduler {
 
     private class DmrOp implements Runnable {
 
-        private final Timer responses = metrics.timer(MetricRegistry.name(DmrOp.class, "responses"));
-
         private final Operation operation;
+        private final long interval;
 
-        private DmrOp(final Operation operation) {
+        private DmrOp(final Operation operation, final long interval) {
             this.operation = operation;
+            this.interval = interval;
         }
 
         @Override
         public void run() {
             // TODO Update statistics
             OperationResult operationResult;
-            final Timer.Context context = responses.time();
             try {
+                Timer.Context context = responses.time();
+                penalties.inc();
                 ModelNode response = client.execute(operation.getOperation());
-                context.stop();
+                long durationMs = context.stop() / 1000000;
+
                 String outcome = response.get("outcome").asString();
                 if ("success".equals(outcome)) {
-                    operationResult = new OperationResult(operation.getId(), response.get("result"), OperationResult.Status.SUCCESS);
+                    if (durationMs < interval) {
+                        penalties.dec();
+                    }
+                    operationResult = new OperationResult(operation.getId(), response.get("result"),
+                            OperationResult.Status.SUCCESS);
                 } else {
-                    operationResult = new OperationResult(operation.getId(), response.get("failure-description"), OperationResult.Status.FAILED);
+                    operationResult = new OperationResult(operation.getId(), response.get("failure-description"),
+                            OperationResult.Status.FAILED);
                 }
             } catch (IOException e) {
                 ModelNode exceptionModel = new ModelNode().get("failure-description").set(e.getMessage());
-                operationResult = new OperationResult(operation.getId(), exceptionModel,  OperationResult.Status.FAILED);
+                operationResult = new OperationResult(operation.getId(), exceptionModel, OperationResult.Status.FAILED);
             }
             consumer.consume(operationResult);
         }
@@ -91,7 +99,8 @@ public class IntervalBasedScheduler extends AbstractScheduler {
     private final OperationResultConsumer consumer;
     private final MetricRegistry metrics;
     private final ConsoleReporter reporter;
-
+    private final Timer responses;
+    private final Counter penalties;
 
     public IntervalBasedScheduler(final ModelControllerClient client) {
         this(client, DEFAULT_POOL_SIZE);
@@ -99,7 +108,7 @@ public class IntervalBasedScheduler extends AbstractScheduler {
 
     public IntervalBasedScheduler(final ModelControllerClient client, final int poolSize) {
         this.client = client;
-        this.executorService = Executors.newScheduledThreadPool(poolSize);
+        this.executorService = Executors.newSingleThreadScheduledExecutor();
         this.jobs = new LinkedList<>();
         this.consumer = new PrintOperationResult();
         this.metrics = new MetricRegistry();
@@ -107,6 +116,8 @@ public class IntervalBasedScheduler extends AbstractScheduler {
                 .convertRatesTo(TimeUnit.SECONDS)
                 .convertDurationsTo(TimeUnit.MILLISECONDS)
                 .build();
+        this.responses = metrics.timer(MetricRegistry.name(DmrOp.class, "responses"));
+        this.penalties = metrics.counter(MetricRegistry.name(DmrOp.class, "penalties"));
     }
 
     @Override
@@ -115,9 +126,12 @@ public class IntervalBasedScheduler extends AbstractScheduler {
 
         ReadAttributeOperationBuilder operationBuilder = new ReadAttributeOperationBuilder();
         for (TaskGroup group : groups) {
-            Operation operation = operationBuilder.createOperation(group);
-            jobs.add(executorService.scheduleWithFixedDelay(new DmrOp(operation), 0, group.getInterval().millis(),
-                    TimeUnit.MILLISECONDS));
+            Set<Operation> operations = operationBuilder.createOperation(group);
+            for (Operation operation : operations) {
+                long millis = group.getInterval().millis();
+                jobs.add(executorService.scheduleWithFixedDelay(new DmrOp(operation, millis), 0, millis,
+                        TimeUnit.MILLISECONDS));
+            }
         }
 
         pushState(RUNNING);
@@ -147,7 +161,6 @@ public class IntervalBasedScheduler extends AbstractScheduler {
             reporter.stop();
             reporter.report();
         }
-
     }
 
     @Override

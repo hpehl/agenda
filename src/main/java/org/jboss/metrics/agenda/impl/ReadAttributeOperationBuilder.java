@@ -21,8 +21,9 @@
  */
 package org.jboss.metrics.agenda.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.metrics.agenda.Operation;
@@ -41,7 +42,7 @@ import org.jboss.metrics.agenda.address.AddressTuple;
 public class ReadAttributeOperationBuilder implements OperationBuilder {
 
     @Override
-    public Operation createOperation(final TaskGroup group) {
+    public Set<Operation> createOperation(final TaskGroup group) {
 
         if (group.isEmpty()) {
             throw new IllegalArgumentException("Empty groups are not allowed");
@@ -51,19 +52,25 @@ public class ReadAttributeOperationBuilder implements OperationBuilder {
         if (group.size() == 1) {
             ModelNode node = readAttribute(group.iterator().next());
             operation = new Operation(node);
+            return new HashSet<>(Arrays.asList(operation));
 
         } else {
-            ModelNode comp = new ModelNode();
-            List<ModelNode> steps = new ArrayList<>();
-            comp.get("address").setEmptyList();
-            comp.get("operation").set("composite");
+            //            ModelNode comp = new ModelNode();
+            //            List<ModelNode> steps = new ArrayList<>();
+            //            comp.get("address").setEmptyList();
+            //            comp.get("operation").set("composite");
+            //            for (Task task : group) {
+            //                steps.add(readAttribute(task));
+            //            }
+            //            comp.get("steps").set(steps);
+            //            operation = new Operation(comp);
+            Set<Operation> ops = new HashSet<>();
             for (Task task : group) {
-                steps.add(readAttribute(task));
+                ops.add(new Operation(readAttribute(task)));
             }
-            comp.get("steps").set(steps);
-            operation = new Operation(comp);
+            return ops;
         }
-        return operation;
+//        return operation;
     }
 
     private ModelNode readAttribute(Task task) {
