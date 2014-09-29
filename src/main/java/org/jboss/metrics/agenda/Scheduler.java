@@ -24,17 +24,6 @@ package org.jboss.metrics.agenda;
 import java.util.Set;
 
 /**
- * An interface which takes an {@link org.jboss.metrics.agenda.Agenda}, turns it into
- * executable {@link Operation}s and executes them repeatedly.
- * <p/>
- * This interface has an implicit lifecycle:
- * <ol>
- * <li>Prepare: Takes an agenda, transforms it to executable tasks.</li>
- * <li>Running: Executes the given tasks. How the tasks are executed and in which order highly depends on the
- * concrete implementation.</li>
- * <li>Shut down: Stops the execution of the tasks managed by this executor.</li>
- * </ol>
- *
  * @author Harald Pehl
  */
 public interface Scheduler {

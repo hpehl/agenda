@@ -21,6 +21,10 @@
  */
 package org.jboss.metrics.agenda;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,16 +32,23 @@ import java.util.concurrent.TimeUnit;
  */
 public enum Interval {
 
-    EACH_SECOND(1, TimeUnit.SECONDS),
-    TWO_SECONDS(2, TimeUnit.SECONDS),
-    FIVE_SECONDS(5, TimeUnit.SECONDS),
+    EACH_SECOND(1, SECONDS),
+    TWO_SECONDS(2, SECONDS),
+    FIVE_SECONDS(5, SECONDS),
 
-    EACH_MINUTES(1, TimeUnit.MINUTES),
-    TWO_MINUTES(2, TimeUnit.MINUTES),
-    FIVE_MINUTES(5, TimeUnit.MINUTES),
-    TWENTY_MINUTES(20, TimeUnit.MINUTES),
+    EACH_MINUTE(1, MINUTES),
+    TWO_MINUTES(2, MINUTES),
+    FIVE_MINUTES(5, MINUTES),
+    TEN_MINUTES(10, MINUTES),
+    TWENTY_MINUTES(20, MINUTES),
+    THIRTY_MINUTES(30, MINUTES),
 
-    EACH_HOUR(1, TimeUnit.HOURS);
+    EACH_HOUR(1, TimeUnit.HOURS),
+    TWO_HOURS(2, TimeUnit.HOURS),
+    SIX_HOURS(6, TimeUnit.HOURS),
+    TWELVE_HOURS(12, TimeUnit.HOURS),
+
+    EACH_DAY(1, TimeUnit.DAYS);
 
     private final int val;
     private final TimeUnit unit;
@@ -48,6 +59,6 @@ public enum Interval {
     }
 
     public long millis() {
-        return TimeUnit.MILLISECONDS.convert(val, unit);
+        return MILLISECONDS.convert(val, unit);
     }
 }

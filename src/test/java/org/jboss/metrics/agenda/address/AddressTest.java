@@ -1,32 +1,28 @@
 package org.jboss.metrics.agenda.address;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import org.jboss.metrics.agenda.address.Address;
-import org.jboss.metrics.agenda.address.AddressTokenizer;
 import org.junit.Test;
 
-public class AddressTokenizerTest {
+public class AddressTest {
 
     @Test
     public void nullAddress() {
-        Address address = AddressTokenizer.on(null).get();
+        Address address = Address.apply(null);
         assertNotNull(address);
         assertTrue(address.isEmpty());
     }
 
     @Test
     public void emptyAddress() {
-        Address address = AddressTokenizer.on("").get();
+        Address address = Address.apply("");
         assertNotNull(address);
         assertTrue(address.isEmpty());
     }
 
     @Test
     public void incompleteAddress() {
-        Address address = AddressTokenizer.on("/subsystem=datasources/data-source=").get();
+        Address address = Address.apply("/subsystem=datasources/data-source=");
         assertNotNull(address);
         assertFalse(address.isEmpty());
         assertFalse(address.isBalanced());
@@ -34,7 +30,7 @@ public class AddressTokenizerTest {
 
     @Test
     public void validAddress() {
-        Address address = AddressTokenizer.on("/subsystem=datasources/data-source=ExampleDS").get();
+        Address address = Address.apply("/subsystem=datasources/data-source=ExampleDS");
         assertNotNull(address);
         assertFalse(address.isEmpty());
         assertTrue(address.isBalanced());

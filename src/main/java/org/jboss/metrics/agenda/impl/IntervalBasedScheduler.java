@@ -63,18 +63,17 @@ public class IntervalBasedScheduler extends AbstractScheduler {
 
         @Override
         public void run() {
-            // TODO Update statistics
-            OperationResult operationResult;
+            OperationResult operationResult = null;
             try {
                 Timer.Context context = responses.time();
-                penalties.inc();
-                ModelNode response = client.execute(operation.getOperation());
+                delayed.inc(); // assumption: every op is delayed or erroneous
+                ModelNode response = client.execute(operation.getModelNode());
                 long durationMs = context.stop() / 1000000;
 
                 String outcome = response.get("outcome").asString();
                 if ("success".equals(outcome)) {
                     if (durationMs < interval) {
-                        penalties.dec();
+                        delayed.dec(); // not delayed
                     }
                     operationResult = new OperationResult(operation.getId(), response.get("result"),
                             OperationResult.Status.SUCCESS);
@@ -86,7 +85,11 @@ public class IntervalBasedScheduler extends AbstractScheduler {
                 ModelNode exceptionModel = new ModelNode().get("failure-description").set(e.getMessage());
                 operationResult = new OperationResult(operation.getId(), exceptionModel, OperationResult.Status.FAILED);
             }
-            consumer.consume(operationResult);
+            finally {
+                if (operationResult != null && consumer != null) {
+                    consumer.consume(operationResult);
+                }
+            }
         }
     }
 
@@ -97,27 +100,29 @@ public class IntervalBasedScheduler extends AbstractScheduler {
     private final ScheduledExecutorService executorService;
     private final List<ScheduledFuture> jobs;
     private final OperationResultConsumer consumer;
-    private final MetricRegistry metrics;
     private final ConsoleReporter reporter;
     private final Timer responses;
-    private final Counter penalties;
+    private final Counter delayed;
 
     public IntervalBasedScheduler(final ModelControllerClient client) {
-        this(client, DEFAULT_POOL_SIZE);
+        this(client, DEFAULT_POOL_SIZE, null);
     }
 
-    public IntervalBasedScheduler(final ModelControllerClient client, final int poolSize) {
+    public IntervalBasedScheduler(final ModelControllerClient client, final int poolSize,
+            final OperationResultConsumer consumer) {
         this.client = client;
-        this.executorService = Executors.newSingleThreadScheduledExecutor();
+        this.executorService = Executors.newScheduledThreadPool(poolSize);
         this.jobs = new LinkedList<>();
-        this.consumer = new PrintOperationResult();
-        this.metrics = new MetricRegistry();
+        this.consumer = consumer;
+
+        // metrics
+        MetricRegistry metrics = new MetricRegistry();
         this.reporter = ConsoleReporter.forRegistry(metrics)
                 .convertRatesTo(TimeUnit.SECONDS)
                 .convertDurationsTo(TimeUnit.MILLISECONDS)
                 .build();
         this.responses = metrics.timer(MetricRegistry.name(DmrOp.class, "responses"));
-        this.penalties = metrics.counter(MetricRegistry.name(DmrOp.class, "penalties"));
+        this.delayed = metrics.counter(MetricRegistry.name(DmrOp.class, "delayed"));
     }
 
     @Override

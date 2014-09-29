@@ -26,18 +26,18 @@ import java.util.UUID;
 import org.jboss.dmr.ModelNode;
 
 /**
- * An executable task holding an unique id and a {@link org.jboss.dmr.ModelNode} operation.
+ * An executable operation holding an unique id and a {@link org.jboss.dmr.ModelNode} model node.
  *
  * @author Harald Pehl
  */
 public class Operation {
 
     private final String id;
-    private final ModelNode operation;
+    private final ModelNode modelNode;
 
-    public Operation(final ModelNode operation) {
+    public Operation(final ModelNode modelNode) {
         this.id = UUID.randomUUID().toString();
-        this.operation = operation;
+        this.modelNode = modelNode;
     }
 
     @Override
@@ -59,14 +59,14 @@ public class Operation {
 
     @Override
     public String toString() {
-        return "Task(" + id + ")";
+        return "Operation(" + id + ")";
     }
 
     public String getId() {
         return id;
     }
 
-    public ModelNode getOperation() {
-        return operation;
+    public ModelNode getModelNode() {
+        return modelNode;
     }
 }

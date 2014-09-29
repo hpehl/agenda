@@ -35,7 +35,7 @@ import org.jboss.metrics.agenda.impl.IntervalGrouping;
 public class DemoApp {
 
     public static void main(String[] args) throws Exception {
-        Agenda agenda = Agendas.stressTest();
+        Agenda agenda = TestData.dataSourceAgenda();
         IntervalGrouping intervalGrouping = new IntervalGrouping();
         Set<TaskGroup> groups = intervalGrouping.apply(agenda.getTasks());
 

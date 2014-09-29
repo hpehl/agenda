@@ -31,6 +31,6 @@ public class PrintOperationResult implements OperationResultConsumer {
 
     @Override
     public void consume(final OperationResult operationResult) {
-        System.out.println("Task result: " + operationResult);
+        System.out.println("Operation result: " + operationResult);
     }
 }

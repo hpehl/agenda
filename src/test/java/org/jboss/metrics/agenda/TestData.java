@@ -21,22 +21,32 @@
  */
 package org.jboss.metrics.agenda;
 
+import static org.jboss.metrics.agenda.Interval.EACH_SECOND;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Harald Pehl
  */
-public final class Agendas {
+public final class TestData {
 
-    private Agendas() {}
+    private TestData() {}
 
-    public static Agenda dataSourcePool() {
+    public static Task fooTask() {
+        return fooTask(EACH_SECOND);
+    }
+
+    public static Task fooTask(Interval interval) {
+        return new Task("/foo=bar", "baz", interval);
+    }
+
+    public static Agenda dataSourceAgenda() {
         List<Task> definitions = new ArrayList<>();
         String address = "/subsystem=datasources/data-source=ExampleDS/statistics=pool";
 
-        definitions.add(new Task(address, "CreatedCount", Interval.EACH_SECOND));
-        definitions.add(new Task(address, "DestroyedCount", Interval.EACH_SECOND));
+        definitions.add(new Task(address, "CreatedCount", EACH_SECOND));
+        definitions.add(new Task(address, "DestroyedCount", EACH_SECOND));
 
         definitions.add(new Task(address, "TimedOut", Interval.TWO_SECONDS));
         definitions.add(new Task(address, "InUseCount", Interval.TWO_SECONDS));
@@ -46,23 +56,6 @@ public final class Agendas {
         definitions.add(new Task(address, "AvailableCount", Interval.FIVE_SECONDS));
         definitions.add(new Task(address, "ActiveCount", Interval.FIVE_SECONDS));
 
-        return new Agenda("dataSourcePool", definitions);
-    }
-
-    public static Agenda stressTest() {
-        List<Task> definitions = new ArrayList<>();
-        String address = "/subsystem=datasources/data-source=ExampleDS/statistics=pool";
-
-        for (int i = 0; i < 1000; i++) {
-            definitions.add(new Task(address, "CreatedCount", Interval.EACH_SECOND));
-            definitions.add(new Task(address, "DestroyedCount", Interval.EACH_SECOND));
-        }
-
-        for (int i = 0; i < 500; i++) {
-            definitions.add(new Task(address, "TimedOut", Interval.TWO_SECONDS));
-            definitions.add(new Task(address, "InUseCount", Interval.TWO_SECONDS));
-            definitions.add(new Task(address, "AverageBlockingTime", Interval.TWO_SECONDS));
-        }
-        return new Agenda("stressTest", definitions);
+        return new Agenda("dataSourceAgenda", definitions);
     }
 }

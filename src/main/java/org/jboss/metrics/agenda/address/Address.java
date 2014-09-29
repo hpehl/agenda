@@ -26,20 +26,37 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterators;
 
 /**
  * @author Harald Pehl
  */
-public class Address implements Iterable<AddressTuple> {
+public class Address implements Iterable<Address.Tuple> {
 
-    private final List<AddressTuple> tuples;
+    public static Address apply(String address) {
+        List<String> tokens = address == null ? Collections.<String>emptyList() :
+                Splitter.on(CharMatcher.anyOf("/="))
+                        .trimResults()
+                        .omitEmptyStrings()
+                        .splitToList(address);
 
-    public Address() {
-        this(Collections.<AddressTuple>emptyList());
+        List<Tuple> tuples = new ArrayList<>(tokens.size() / 2 + 1);
+        for (Iterator<String> iterator = tokens.iterator(); iterator.hasNext(); ) {
+            String type = iterator.next();
+            String name = iterator.hasNext() ? iterator.next() : "";
+            tuples.add(new Tuple(type, name));
+        }
+
+        return new Address(tuples);
     }
 
-    public Address(final List<AddressTuple> tuples) {
+
+    private final List<Tuple> tuples;
+
+    private Address(final List<Tuple> tuples) {
         this.tuples = new ArrayList<>();
         if (tuples != null) {
             this.tuples.addAll(tuples);
@@ -69,18 +86,66 @@ public class Address implements Iterable<AddressTuple> {
     }
 
     @Override
-    public Iterator<AddressTuple> iterator() {
-        return tuples.iterator();
+    public Iterator<Tuple> iterator() {
+        return Iterators.unmodifiableIterator(tuples.iterator());
     }
 
     public boolean isEmpty() {return tuples.isEmpty();}
 
     public boolean isBalanced() {
-        for (AddressTuple tuple : this) {
+        for (Tuple tuple : this) {
             if (tuple.getValue() == null || tuple.getValue().length() == 0) {
                 return false;
             }
         }
         return true;
+    }
+
+
+    /**
+     * @author Harald Pehl
+     */
+    public static class Tuple {
+
+        private final String key;
+        private final String value;
+
+        public Tuple(final String key, final String value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) { return true; }
+            if (!(o instanceof Tuple)) { return false; }
+
+            Tuple that = (Tuple) o;
+
+            if (!value.equals(that.value)) { return false; }
+            if (!key.equals(that.key)) { return false; }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = key.hashCode();
+            result = 31 * result + value.hashCode();
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return key + "=" + value;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 }

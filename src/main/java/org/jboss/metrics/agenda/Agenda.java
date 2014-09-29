@@ -44,6 +44,11 @@ public class Agenda {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Agenda(" + id + ")";
+    }
+
     public String getId() {
         return id;
     }

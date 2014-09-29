@@ -21,8 +21,11 @@
  */
 package org.jboss.metrics.agenda.impl;
 
-import java.util.Arrays;
+import static java.util.Arrays.asList;
+
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.jboss.dmr.ModelNode;
@@ -31,8 +34,6 @@ import org.jboss.metrics.agenda.OperationBuilder;
 import org.jboss.metrics.agenda.Task;
 import org.jboss.metrics.agenda.TaskGroup;
 import org.jboss.metrics.agenda.address.Address;
-import org.jboss.metrics.agenda.address.AddressTokenizer;
-import org.jboss.metrics.agenda.address.AddressTuple;
 
 /**
  * Creates a {@code read-attribute} operation of the given {@link org.jboss.metrics.agenda.TaskGroup}.
@@ -48,35 +49,27 @@ public class ReadAttributeOperationBuilder implements OperationBuilder {
             throw new IllegalArgumentException("Empty groups are not allowed");
         }
 
-        final Operation operation;
         if (group.size() == 1) {
             ModelNode node = readAttribute(group.iterator().next());
-            operation = new Operation(node);
-            return new HashSet<>(Arrays.asList(operation));
+            return new HashSet<>(asList(new Operation(node)));
 
         } else {
-            //            ModelNode comp = new ModelNode();
-            //            List<ModelNode> steps = new ArrayList<>();
-            //            comp.get("address").setEmptyList();
-            //            comp.get("operation").set("composite");
-            //            for (Task task : group) {
-            //                steps.add(readAttribute(task));
-            //            }
-            //            comp.get("steps").set(steps);
-            //            operation = new Operation(comp);
-            Set<Operation> ops = new HashSet<>();
+            ModelNode comp = new ModelNode();
+            List<ModelNode> steps = new ArrayList<>();
+            comp.get("address").setEmptyList();
+            comp.get("operation").set("composite");
             for (Task task : group) {
-                ops.add(new Operation(readAttribute(task)));
+                steps.add(readAttribute(task));
             }
-            return ops;
+            comp.get("steps").set(steps);
+            return new HashSet<>(asList(new Operation(comp)));
         }
-//        return operation;
     }
 
     private ModelNode readAttribute(Task task) {
         ModelNode node = new ModelNode();
-        Address address = AddressTokenizer.on(task.getAddress()).get();
-        for (AddressTuple tuple : address) {
+        Address address = Address.apply(task.getAddress());
+        for (Address.Tuple tuple : address) {
             node.get("address").add(tuple.getKey(), tuple.getValue());
         }
         node.get("operation").set("read-attribute");

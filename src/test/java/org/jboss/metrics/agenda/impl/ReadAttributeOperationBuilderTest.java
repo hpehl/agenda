@@ -1,6 +1,18 @@
 package org.jboss.metrics.agenda.impl;
 
+import static org.jboss.metrics.agenda.Interval.EACH_SECOND;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Set;
+
+import org.jboss.dmr.ModelNode;
+import org.jboss.metrics.agenda.Operation;
 import org.jboss.metrics.agenda.OperationBuilder;
+import org.jboss.metrics.agenda.Task;
+import org.jboss.metrics.agenda.TaskGroup;
+import org.jboss.metrics.agenda.TestData;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,23 +25,34 @@ public class ReadAttributeOperationBuilderTest {
         operationBuilder = new ReadAttributeOperationBuilder();
     }
 
-    @Test
-    public void createTask() {
-//        Task td = new Task("/subsystem=datasources/data-source=ExampleDS/statistics=pool",
-//                "ActiveCount", 5, SECONDS);
+    @Test(expected = IllegalArgumentException.class)
+    public void emptyGroup() {
+        operationBuilder.createOperation(new TaskGroup(EACH_SECOND));
+    }
 
-//        Operation task = operationBuilder.createOperation(td);
-//        assertNotNull(task);
-//
-//        ModelNode operation = task.getOperation();
-//        assertNotNull(operation);
-//
-//        ModelNode expected = new ModelNode();
-//        expected.get("address").add("subsystem", "datasources");
-//        expected.get("address").add("data-source", "ExampleDS");
-//        expected.get("address").add("statistics", "pool");
-//        expected.get("operation").set("read-attribute");
-//        expected.get("name").set("ActiveCount");
-//        assertEquals(expected, operation);
+    @Test
+    public void simpleOp() {
+        TaskGroup group = new TaskGroup(EACH_SECOND);
+        group.addTask(TestData.fooTask(EACH_SECOND));
+        Set<Operation> operations = operationBuilder.createOperation(group);
+
+        assertEquals(1, operations.size());
+        ModelNode modelNode = operations.iterator().next().getModelNode();
+        assertFalse(modelNode.get("address").asList().isEmpty());
+        assertEquals("read-attribute", modelNode.get("operation").asString());
+    }
+
+    @Test
+    public void compOp() {
+        TaskGroup group = new TaskGroup(EACH_SECOND);
+        group.addTask(new Task("/a=b", "c", EACH_SECOND));
+        group.addTask(new Task("/x=y", "z", EACH_SECOND));
+        Set<Operation> operations = operationBuilder.createOperation(group);
+
+        assertEquals(1, operations.size());
+        ModelNode modelNode = operations.iterator().next().getModelNode();
+        assertTrue(modelNode.get("address").asList().isEmpty());
+        assertEquals("composite", modelNode.get("operation").asString());
+        assertEquals(2, modelNode.get("steps").asList().size());
     }
 }

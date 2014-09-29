@@ -21,6 +21,7 @@
  */
 package org.jboss.metrics.agenda;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -77,10 +78,21 @@ public class TaskGroup implements Iterable<Task> {
     }
 
     public void addTask(Task task) {
+        verifyInterval(task);
+        tasks.add(task);
+    }
+
+    public boolean addAll(final Collection<? extends Task> collection) {
+        for (Task task : collection) {
+            verifyInterval(task);
+        }
+        return tasks.addAll(collection);
+    }
+
+    private void verifyInterval(final Task task) {
         if (task.getInterval() != interval) {
             throw new IllegalArgumentException("Wrong interval: Expected " + interval + ", but got " + task.getInterval());
         }
-        tasks.add(task);
     }
 
     public int size() {return tasks.size();}
