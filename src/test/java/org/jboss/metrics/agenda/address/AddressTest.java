@@ -2,6 +2,7 @@ package org.jboss.metrics.agenda.address;
 
 import static org.junit.Assert.*;
 
+import org.jboss.metrics.agenda.address.Address.Tuple;
 import org.junit.Test;
 
 public class AddressTest {
@@ -34,5 +35,12 @@ public class AddressTest {
         assertNotNull(address);
         assertFalse(address.isEmpty());
         assertTrue(address.isBalanced());
+    }
+
+    @Test
+    public void startsWith() {
+        Address address = Address.apply("/host=master/server=server1");
+        assertTrue(address.startsWith(Tuple.apply("host=master")));
+        assertFalse(address.startsWith(Tuple.apply("server=server1")));
     }
 }

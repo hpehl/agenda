@@ -51,7 +51,7 @@ public class IntervalGrouping implements TaskGrouping {
         Set<TaskGroup> groups = new HashSet<>();
         for (Interval interval : tasksByInterval.keys()) {
             TaskGroup group = new TaskGroup(interval);
-            group.addAll(tasksByInterval.get(interval));
+            group.addTasks(tasksByInterval.get(interval));
             groups.add(group);
         }
         return groups;

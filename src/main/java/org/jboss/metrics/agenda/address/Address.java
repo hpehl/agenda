@@ -101,16 +101,34 @@ public class Address implements Iterable<Address.Tuple> {
         return true;
     }
 
+    public boolean startsWith(Tuple tuple) {
+        return !tuples.isEmpty() && tuples.get(0).equals(tuple);
+    }
+
 
     /**
      * @author Harald Pehl
      */
     public static class Tuple {
 
+        public static Tuple apply(String tuple) {
+            if (tuple == null) {
+                throw new IllegalArgumentException("Tuple must not be null");
+            }
+            List<String> tuples = Splitter.on('=')
+                    .omitEmptyStrings()
+                    .trimResults()
+                    .splitToList(tuple);
+            if (tuples.isEmpty() || tuples.size() != 2) {
+                throw new IllegalArgumentException("Malformed tuple: " + tuple);
+            }
+            return new Tuple(tuples.get(0), tuples.get(1));
+        }
+
         private final String key;
         private final String value;
 
-        public Tuple(final String key, final String value) {
+        private Tuple(final String key, final String value) {
             this.key = key;
             this.value = value;
         }

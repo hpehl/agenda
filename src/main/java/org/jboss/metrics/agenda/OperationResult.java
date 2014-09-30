@@ -65,7 +65,7 @@ public class OperationResult {
 
     @Override
     public String toString() {
-        return "TaskResult(" + taskId + ", " + status+")";
+        return "OperationResult(" + taskId + ", " + status + ")";
     }
 
     public String getTaskId() {

@@ -34,8 +34,8 @@ import com.google.common.collect.Iterators;
  */
 public class TaskGroup implements Iterable<Task> {
 
-    public final static String ANY_HOST = "any_host";
-    public final static String ANY_SERVER = "any_server";
+    public final static String ANY_HOST = TaskGroup.class.getName() + ".anyHost";
+    public final static String ANY_SERVER = TaskGroup.class.getName() + ".anyServer";
 
     private final String id; // to uniquely reference this group
     private final Interval interval; // impacts thread scheduling
@@ -45,6 +45,10 @@ public class TaskGroup implements Iterable<Task> {
 
     public TaskGroup(final Interval interval) {
         this(interval, ANY_HOST, ANY_SERVER);
+    }
+
+    public TaskGroup(final Interval interval, String host) {
+        this(interval, host, ANY_SERVER);
     }
 
     public TaskGroup(final Interval interval, final String host, final String server) {
@@ -82,7 +86,7 @@ public class TaskGroup implements Iterable<Task> {
         tasks.add(task);
     }
 
-    public boolean addAll(final Collection<? extends Task> collection) {
+    public boolean addTasks(final Collection<? extends Task> collection) {
         for (Task task : collection) {
             verifyInterval(task);
         }

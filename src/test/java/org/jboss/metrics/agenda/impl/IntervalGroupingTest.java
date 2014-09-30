@@ -2,7 +2,6 @@ package org.jboss.metrics.agenda.impl;
 
 import static org.jboss.metrics.agenda.Interval.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -36,8 +35,5 @@ public class IntervalGroupingTest {
         Set<TaskGroup> groups = grouping.apply(Arrays.asList(s1x, s1y, s1z, s2x, s2y, m1x, m1y, m1z));
 
         assertEquals(3, groups.size());
-        assertTrue(groups.contains(new TaskGroup(EACH_SECOND)));
-        assertTrue(groups.contains(new TaskGroup(TWO_SECONDS)));
-        assertTrue(groups.contains(new TaskGroup(EACH_MINUTE)));
     }
 }

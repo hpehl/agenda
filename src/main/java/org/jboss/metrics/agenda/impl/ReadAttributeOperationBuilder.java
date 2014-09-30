@@ -51,7 +51,7 @@ public class ReadAttributeOperationBuilder implements OperationBuilder {
 
         if (group.size() == 1) {
             ModelNode node = readAttribute(group.iterator().next());
-            return new HashSet<>(asList(new Operation(node)));
+            return new HashSet<>(asList(new Operation(group.getInterval().millis(), node)));
 
         } else {
             ModelNode comp = new ModelNode();
@@ -62,7 +62,7 @@ public class ReadAttributeOperationBuilder implements OperationBuilder {
                 steps.add(readAttribute(task));
             }
             comp.get("steps").set(steps);
-            return new HashSet<>(asList(new Operation(comp)));
+            return new HashSet<>(asList(new Operation(group.getInterval().millis(), comp)));
         }
     }
 

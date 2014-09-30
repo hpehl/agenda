@@ -21,6 +21,8 @@
  */
 package org.jboss.metrics.agenda.impl;
 
+import static com.codahale.metrics.MetricRegistry.name;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.jboss.metrics.agenda.Scheduler.State.RUNNING;
 import static org.jboss.metrics.agenda.Scheduler.State.STOPPED;
 
@@ -43,36 +45,32 @@ import org.jboss.metrics.agenda.Operation;
 import org.jboss.metrics.agenda.OperationResult;
 import org.jboss.metrics.agenda.OperationResultConsumer;
 import org.jboss.metrics.agenda.Statistics;
-import org.jboss.metrics.agenda.TaskGroup;
 
 /**
  * @author Harald Pehl
  */
 public class IntervalBasedScheduler extends AbstractScheduler {
 
-
-    private class DmrOp implements Runnable {
+    private class OperationExecution implements Runnable {
 
         private final Operation operation;
-        private final long interval;
 
-        private DmrOp(final Operation operation, final long interval) {
+        private OperationExecution(final Operation operation) {
             this.operation = operation;
-            this.interval = interval;
         }
 
         @Override
         public void run() {
             OperationResult operationResult = null;
             try {
-                Timer.Context context = responses.time();
+                Timer.Context context = stopwatch.time();
                 delayed.inc(); // assumption: every op is delayed or erroneous
                 ModelNode response = client.execute(operation.getModelNode());
                 long durationMs = context.stop() / 1000000;
 
                 String outcome = response.get("outcome").asString();
                 if ("success".equals(outcome)) {
-                    if (durationMs < interval) {
+                    if (durationMs < operation.getInterval()) {
                         delayed.dec(); // not delayed
                     }
                     operationResult = new OperationResult(operation.getId(), response.get("result"),
@@ -84,8 +82,7 @@ public class IntervalBasedScheduler extends AbstractScheduler {
             } catch (IOException e) {
                 ModelNode exceptionModel = new ModelNode().get("failure-description").set(e.getMessage());
                 operationResult = new OperationResult(operation.getId(), exceptionModel, OperationResult.Status.FAILED);
-            }
-            finally {
+            } finally {
                 if (operationResult != null && consumer != null) {
                     consumer.consume(operationResult);
                 }
@@ -101,7 +98,7 @@ public class IntervalBasedScheduler extends AbstractScheduler {
     private final List<ScheduledFuture> jobs;
     private final OperationResultConsumer consumer;
     private final ConsoleReporter reporter;
-    private final Timer responses;
+    private final Timer stopwatch;
     private final Counter delayed;
 
     public IntervalBasedScheduler(final ModelControllerClient client) {
@@ -119,24 +116,19 @@ public class IntervalBasedScheduler extends AbstractScheduler {
         MetricRegistry metrics = new MetricRegistry();
         this.reporter = ConsoleReporter.forRegistry(metrics)
                 .convertRatesTo(TimeUnit.SECONDS)
-                .convertDurationsTo(TimeUnit.MILLISECONDS)
+                .convertDurationsTo(MILLISECONDS)
                 .build();
-        this.responses = metrics.timer(MetricRegistry.name(DmrOp.class, "responses"));
-        this.delayed = metrics.counter(MetricRegistry.name(DmrOp.class, "delayed"));
+        this.stopwatch = metrics.timer(name("stopwatch"));
+        this.delayed = metrics.counter(name("delayed"));
     }
 
     @Override
-    public void start(Set<TaskGroup> groups) {
+    public void start(Set<Operation> operations) {
         verifyState(STOPPED);
 
-        ReadAttributeOperationBuilder operationBuilder = new ReadAttributeOperationBuilder();
-        for (TaskGroup group : groups) {
-            Set<Operation> operations = operationBuilder.createOperation(group);
-            for (Operation operation : operations) {
-                long millis = group.getInterval().millis();
-                jobs.add(executorService.scheduleWithFixedDelay(new DmrOp(operation, millis), 0, millis,
-                        TimeUnit.MILLISECONDS));
-            }
+        for (Operation operation : operations) {
+            jobs.add(executorService.scheduleWithFixedDelay(new OperationExecution(operation), 0,
+                    operation.getInterval(), MILLISECONDS));
         }
 
         pushState(RUNNING);

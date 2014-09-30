@@ -33,9 +33,11 @@ import org.jboss.dmr.ModelNode;
 public class Operation {
 
     private final String id;
+    private final long interval;
     private final ModelNode modelNode;
 
-    public Operation(final ModelNode modelNode) {
+    public Operation(final long interval, final ModelNode modelNode) {
+        this.interval = interval;
         this.id = UUID.randomUUID().toString();
         this.modelNode = modelNode;
     }
@@ -59,11 +61,15 @@ public class Operation {
 
     @Override
     public String toString() {
-        return "Operation(" + id + ")";
+        return "Operation(" + id + ", " + interval + "ms)";
     }
 
     public String getId() {
         return id;
+    }
+
+    public long getInterval() {
+        return interval;
     }
 
     public ModelNode getModelNode() {

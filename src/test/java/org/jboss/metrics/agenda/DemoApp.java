@@ -21,13 +21,17 @@
  */
 package org.jboss.metrics.agenda;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.net.InetAddress;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.metrics.agenda.impl.IntervalBasedScheduler;
 import org.jboss.metrics.agenda.impl.IntervalGrouping;
+import org.jboss.metrics.agenda.impl.PrintOperationResult;
+import org.jboss.metrics.agenda.impl.ReadAttributeOperationBuilder;
 
 /**
  * @author Harald Pehl
@@ -35,15 +39,19 @@ import org.jboss.metrics.agenda.impl.IntervalGrouping;
 public class DemoApp {
 
     public static void main(String[] args) throws Exception {
+
         Agenda agenda = TestData.dataSourceAgenda();
-        IntervalGrouping intervalGrouping = new IntervalGrouping();
-        Set<TaskGroup> groups = intervalGrouping.apply(agenda.getTasks());
+        Set<TaskGroup> groups = new IntervalGrouping().apply(agenda.getTasks());
+        Set<Operation> operations = new HashSet<>();
+        ReadAttributeOperationBuilder operationBuilder = new ReadAttributeOperationBuilder();
+        for (TaskGroup group : groups) {
+            operations.addAll(operationBuilder.createOperation(group));
+        }
 
         ModelControllerClient client = ModelControllerClient.Factory.create(InetAddress.getByName("localhost"), 9999);
-        Scheduler executor = new IntervalBasedScheduler(client);
-
-        executor.start(groups);
-        TimeUnit.SECONDS.sleep(25);
+        Scheduler executor = new IntervalBasedScheduler(client, 1, new PrintOperationResult());
+        executor.start(operations);
+        SECONDS.sleep(10);
         executor.stop();
     }
 }
