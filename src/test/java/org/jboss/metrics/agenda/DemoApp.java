@@ -40,16 +40,21 @@ public class DemoApp {
 
     public static void main(String[] args) throws Exception {
 
-        Agenda agenda = TestData.dataSourceAgenda();
+        Agenda agenda = TestData.loadTestAgenda();
         Set<TaskGroup> groups = new IntervalGrouping().apply(agenda.getTasks());
         Set<Operation> operations = new HashSet<>();
+
         ReadAttributeOperationBuilder operationBuilder = new ReadAttributeOperationBuilder();
         for (TaskGroup group : groups) {
             operations.addAll(operationBuilder.createOperation(group));
         }
 
+        System.out.println("<< Agenda Size: "+agenda.getTasks().size()+" >>");
+        System.out.println("<< Number of Task Groups: "+groups.size()+" >>");
+        System.out.println("<< Number of Operations: "+operations.size()+" >>");
+
         ModelControllerClient client = ModelControllerClient.Factory.create(InetAddress.getByName("localhost"), 9999);
-        Scheduler executor = new IntervalBasedScheduler(client, 1, new PrintOperationResult());
+        Scheduler executor = new IntervalBasedScheduler(client, 5, new PrintOperationResult());
         executor.start(operations);
         SECONDS.sleep(10);
         executor.stop();

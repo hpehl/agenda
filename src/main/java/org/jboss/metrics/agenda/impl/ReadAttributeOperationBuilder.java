@@ -49,7 +49,16 @@ public class ReadAttributeOperationBuilder implements OperationBuilder {
             throw new IllegalArgumentException("Empty groups are not allowed");
         }
 
-        if (group.size() == 1) {
+
+        HashSet<Operation> operations = new HashSet<>();
+        for (Task task : group) {
+            ModelNode node = readAttribute(task);
+            operations.add(new Operation(group.getInterval().millis(), node));
+        }
+
+        return operations;
+
+      /*  if (group.size() == 1) {
             ModelNode node = readAttribute(group.iterator().next());
             return new HashSet<>(asList(new Operation(group.getInterval().millis(), node)));
 
@@ -63,7 +72,7 @@ public class ReadAttributeOperationBuilder implements OperationBuilder {
             }
             comp.get("steps").set(steps);
             return new HashSet<>(asList(new Operation(group.getInterval().millis(), comp)));
-        }
+        }*/
     }
 
     private ModelNode readAttribute(Task task) {

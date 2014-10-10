@@ -58,4 +58,26 @@ public final class TestData {
 
         return new Agenda("dataSourceAgenda", definitions);
     }
+
+    public static Agenda loadTestAgenda() {
+        List<Task> definitions = new ArrayList<>();
+
+
+        for(int i=0; i<250; i++) {
+            String address = "/subsystem=datasources/data-source=ExampleDS/statistics=pool";
+
+            definitions.add(new Task(address, "CreatedCount", EACH_SECOND));
+            definitions.add(new Task(address, "DestroyedCount", EACH_SECOND));
+
+            definitions.add(new Task(address, "TimedOut", Interval.TWO_SECONDS));
+            definitions.add(new Task(address, "InUseCount", Interval.TWO_SECONDS));
+            definitions.add(new Task(address, "AverageBlockingTime", Interval.TWO_SECONDS));
+
+            definitions.add(new Task(address, "AverageCreationTime", Interval.FIVE_SECONDS));
+            definitions.add(new Task(address, "AvailableCount", Interval.FIVE_SECONDS));
+            definitions.add(new Task(address, "ActiveCount", Interval.FIVE_SECONDS));
+        }
+
+        return new Agenda("dataSourceAgenda", definitions);
+    }
 }

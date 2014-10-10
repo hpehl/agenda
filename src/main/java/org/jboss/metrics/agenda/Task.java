@@ -36,7 +36,7 @@ public class Task {
         this.interval = interval;
     }
 
-    @Override
+   /* @Override
     public boolean equals(final Object o) {
         if (this == o) { return true; }
         if (!(o instanceof Task)) { return false; }
@@ -56,7 +56,7 @@ public class Task {
         result = 31 * result + attribute.hashCode();
         result = 31 * result + interval.hashCode();
         return result;
-    }
+    }*/
 
     @Override
     public String toString() {
